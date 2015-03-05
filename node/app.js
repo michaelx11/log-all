@@ -9,14 +9,21 @@ var app = express();
 
 app.set('port', 7799);
 
+var CUTOFF = 100;
+
 var toLogFile = stream({ file: './access.log', size: '100k', keep: 1 });
 app.use(morgan('combined', {stream: toLogFile}));
 
 function reverseLines(str) {
   var lines = str.trim().split('\n');
   var result = "";
+  var c = 0;
   for (var i = lines.length - 1; i >= 0; i--) {
     result += lines[i] + '\n\n'
+    c++;
+    if (c >= CUTOFF) {
+      break;
+    }
   }
   return result;
 }

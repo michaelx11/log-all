@@ -7,7 +7,7 @@ var stream = require('logrotate-stream')
 
 var app = express();
 
-app.set('port', 80);
+app.set('port', 7799);
 
 var toLogFile = stream({ file: './access.log', size: '100k', keep: 1 });
 app.use(morgan('combined', {stream: toLogFile}));
@@ -28,7 +28,7 @@ app.all('*', function(req, res) {
       res.send(error);
       return;
     }
-    res.writeHeader('Content-Type: text/plain');
+    res.setHeader('Content-Type', 'text/plain');
     res.write(reverseLines(data));
     res.end();
   });

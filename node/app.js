@@ -16,7 +16,7 @@ function reverseLines(str) {
   var lines = str.trim().split('\n');
   var result = "";
   for (var i = lines.length - 1; i >= 0; i--) {
-    result += lines[i] + '\n'
+    result += lines[i] + '\n\n'
   }
   return result;
 }

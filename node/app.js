@@ -8,11 +8,12 @@ var stream = require('logrotate-stream')
 var app = express();
 
 app.set('port', 7799);
+app.enable('trust proxy');
 
 var CUTOFF = 100;
 
 var toLogFile = stream({ file: './access.log', size: '100k', keep: 1 });
-app.use(morgan('combined', {stream: toLogFile}));
+app.use(morgan('combined', {stream: toLogFile, skip: function(req, res) {return res.statusCode == 404;}}));
 
 function reverseLines(str) {
   var lines = str.trim().split('\n');
@@ -28,7 +29,11 @@ function reverseLines(str) {
   return result;
 }
 
-app.all('*', function(req, res) {
+app.get('/favicon.ico', function(req, res) {
+  res.status(404).end();
+});
+
+app.get('/', function(req, res) {
   fs.readFile(__dirname + '/access.log', {encoding: 'utf-8'}, function(err, data) {
     if (err) {
       console.log(err);
@@ -39,6 +44,10 @@ app.all('*', function(req, res) {
     res.write(reverseLines(data));
     res.end();
   });
+});
+
+app.all('/:pathpath', function(req, res) {
+  res.send(req.params.pathpath);
 });
 
 app.listen(app.get('port'), function() {
